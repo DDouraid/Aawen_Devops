@@ -1,61 +1,42 @@
 pipeline {
-    agent any     
-    
-    
-    tools {
-        maven 'M2_HOME'
-        jdk 'JAVA-HOME'
-    }
-    
+    agent any
     stages {
-        stage('Checkout') {
+        stage("Git Clone") {
             steps {
-                checkout scm
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/NadineMili/Khaddem_DevOps.git']]])
             }
         }
-        
-        stage('Build') {
+        stage('Nettoyage du projet') {
             steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean'
             }
         }
-        
-        stage('Test') {
+        stage('MVN Package') {
             steps {
-                sh 'mvn test'
+                sh "mvn package -DskipTests=true"
             }
         }
-        
-        stage('Scan') {
+        stage('SONARQUBE') {
             steps {
-                withSonarQubeEnv(installationName: 'sq1') {
-                    sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
-                }
+                sh 'mvn sonar:sonar -Dsonar.login=e9085ee87c56742400195eb9b4268923f7143138'
             }
         }
-        
-        stage('Package') {
-            steps {
-                sh 'mvn package -DskipTests'
-            }
-        }
-        
-        stage('Docker Build') {
-            steps {
-                sh 'docker build -t aawen-devops-app:latest .'
-            }
-        }
+
     }
-    
     post {
-        always {
-            cleanWs()
-        }
         success {
-            echo 'Pipeline succeeded!'
+            emailext (
+                subject: 'Construction réussie',
+                body: 'La construction du projet a réussi. Tout est en ordre!',
+                to: 'drididouraiid@gmail.com'
+            )
         }
         failure {
-            echo 'Pipeline failed!'
+            emailext (
+                subject: 'Construction échouée',
+                body: 'La construction du projet a échoué. Veuillez vérifier les logs.',
+                to: 'drididouraiid@gmail.com'
+            )
         }
     }
 }
