@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+   agent any
     stages {
         stage("Git Clone") {
             steps {
@@ -16,9 +16,11 @@ pipeline {
                 sh "mvn package -DskipTests=true"
             }
         }
-        stage('SONARQUBE') {
+        stage('Scan') {
             steps {
-                sh 'mvn sonar:sonar -Dsonar.login=e9085ee87c56742400195eb9b4268923f7143138'
+                withSonarQubeEnv(installationName: 'sq1') {
+                    sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                }
             }
         }
 
