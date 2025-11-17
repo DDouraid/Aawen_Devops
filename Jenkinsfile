@@ -1,9 +1,13 @@
 pipeline {
-    agent any
+    agent { label 'linux' }
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
     
     tools {
-        maven 'M3'
-        jdk 'JDK11'
+        maven 'M2_HOME'
+        jdk 'JAVA-HOME'
     }
     
     stages {
@@ -22,6 +26,14 @@ pipeline {
         stage('Test') {
             steps {
                 sh 'mvn test'
+            }
+        }
+        
+        stage('Scan') {
+            steps {
+                withSonarQubeEnv(installationName: 'sq1') {
+                    sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                }
             }
         }
         
