@@ -39,4 +39,3 @@ docker-compose up
 ## CI/CD
 
 This project includes a `Jenkinsfile` for Jenkins CI/CD pipeline.
-
