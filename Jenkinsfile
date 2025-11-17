@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage("Git Clone") {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/NadineMili/Khaddem_DevOps.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/DDouraid/Aawen_Devops.git']]])
             }
         }
         stage('Nettoyage du projet') {
