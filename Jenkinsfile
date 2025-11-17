@@ -1,9 +1,6 @@
 pipeline {
-    agent { label 'Linux (amd64)' }
+    agent any     
     
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-    }
     
     tools {
         maven 'M2_HOME'
